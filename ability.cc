@@ -13,7 +13,10 @@ public:
 
 export class LinkBoost : public Ability {};
 
-export class FirewallAbility : public Ability {};
+export class FirewallAbility : public Ability {
+public:
+  bool use(Board &, Player &user, const Target &) override;
+};
 
 export class DownloadAbility : public Ability {};
 

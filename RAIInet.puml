@@ -1,6 +1,10 @@
 @startuml
+
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
+skinparam defaultFontName "Arial"
+skinparam packageStyle rectangle
+hide empty members
 
 class PieceId {
   +int value
@@ -23,20 +27,19 @@ class PolarizeAbility
 class ScanAbility
 class BlockadeAbility
 class DiagonalAbility
-class FirewallAbility
+class FirewallAbility {
+  +bool use(Board&, Player& user, const Target&)
+}
 
 class Game {
   +vector<Player> players
-  +vector<Piece> pieces
   +Board board
   +int currentPlayer
   +bool abilityUsedThisTurn
-  +vector<Ability> abilities
+  +vector<unique_ptr<Ability>> abilities
   +bool move(PieceId, Direction)
   +bool useAbility(int, Target)
   +void handleCommand(Command)
-  +void download(PieceId, int recipient)
-  +void reveal(PieceId, int viewer)
   +void checkWin()
 }
 class Player {
@@ -45,9 +48,13 @@ class Player {
   +int downloadedViruses
 }
 class Board {
+  +vector<Piece> pieces
   +Square[8][8] squares
   +Square& at(Position)
-  +Position findPiece(PieceId)
+  +Position findPiece(PieceId) const
+  +Piece& getPiece(PieceId)
+  +void download(PieceId, Player& recipient)
+  +EntryResult enterTerrain(Position destination, PieceId mover, vector<Player>& players)
 }
 class Piece {
   +PieceId id
@@ -68,27 +75,28 @@ enum PieceType {
   Virus
 }
 class Square {
-  +int occupantId
-  +RenderSquareType Type
-  +vector<SquareEffect> effects
-  +bool triggerEnter(Game&, Piece&)
+  +optional<PieceId> occupant
+  +Terrain terrain = Regular
+  +optional<int> owner
+  +unique_ptr<SquareEffect> effect
 }
-enum RenderSquareType {
-  Server
+enum Terrain {
   Regular
-  Firewall
+  Server
   Blockade
 }
 abstract class SquareEffect {
-  +bool effect(Game&, Piece&)
+  +{abstract} optional<int> onEnter(Piece& entering)
 }
 class Firewall {
+  +Firewall(int owner)
   +int owner
-  +bool effect(Game&, Piece&)
+  +optional<int> onEnter(Piece& entering)
 }
-class Server {
-  +int owner
-  +bool effect(Game&, Piece&)
+enum EntryResult {
+  Blocked
+  Continue
+  Downloaded
 }
 
 abstract class Subject {
@@ -154,16 +162,19 @@ Target .up.> Position
 
 Game "1" *-- "2" Player
 Game "1" *-- "1" Board
-Game "1" *-- "16" Piece
-Player "1" *-up- "5" Ability
+Board "1" *-- "0..16" Piece
+Game "1" *-up- "0..*" Ability
 Board "1" *-- "64" Square
-Piece "1" *-- "0..*" Move
-Piece --> PieceType
-Square -left-> RenderSquareType
-Square "1" *-- "0..*" SquareEffect
-Firewall -up-|> SquareEffect
-Server -up-|> SquareEffect
-FirewallAbility ..> Firewall : creates
+Piece "1" *-right- "0..*" Move
+Piece -right-> PieceType
+Square -left-> Terrain
+Square ..> PieceId
+Square "1" *-- "0..1" SquareEffect
+Firewall --|> SquareEffect
+FirewallAbility ..> Firewall : places
+SquareEffect ..> Piece
+Board ..> EntryResult
+Board ..> Player
 
 Game --|> Subject
 Subject o-- "0..*" Observer
