@@ -8,9 +8,10 @@
 TARGET = raiinet
 
 # Source files
-SRC = 
+SRC = observer.cc observer-impl.cc piece.cc piece-impl.cc player.cc player-impl.cc target.cc square.cc square-impl.cc board.cc board-impl.cc command.cc ability.cc ability-impl.cc game.cc game-impl.cc commandinterpreter.cc commandinterpreter-impl.cc view.cc view-impl.cc textdisplay.cc textdisplay-impl.cc graphics.cc graphics-impl.cc main.cc
+
 # Dependencies / Modules
-MODULES = iostream vector algorithm sstream string variant random chrono stdexcept
+MODULES = iostream vector algorithm sstream string variant random chrono stdexcept set map memory optional
 
 ARGS =
 
@@ -23,11 +24,12 @@ MODULEDIR = gcm.cache
 
 all: $(TARGET)
 
-$(TARGET): $(SRC) $(MODULEDIR) # Dependencies for TARGET: SRC and MODULEDIR
+$(TARGET): $(SRC) $(MODULEDIR)/.headers
 	@$(COMP) $(COMPFLAGS) -g $(SRC) -o $@
 
-$(MODULEDIR): # To create MODULEDIR: compile all modules listed in MODULES
+$(MODULEDIR)/.headers: Makefile
 	@$(COMP) $(COMPFLAGS) -c -x c++-system-header $(MODULES)
+	@touch $@
 
 run: $(TARGET)
 	@./$(TARGET) $(ARGS)

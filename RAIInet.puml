@@ -1,0 +1,178 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class PieceId {
+  +int value
+}
+class Position {
+  +int row
+  +int col
+}
+class Target {
+  +variant<PieceId, Position> value
+}
+abstract class Ability {
+  +int Owner
+  +bool use(Board&, Player& user, const Target&)
+}
+class SwapAbility
+class LinkBoost
+class DownloadAbility
+class PolarizeAbility
+class ScanAbility
+class BlockadeAbility
+class DiagonalAbility
+class FirewallAbility
+
+class Game {
+  +vector<Player> players
+  +vector<Piece> pieces
+  +Board board
+  +int currentPlayer
+  +bool abilityUsedThisTurn
+  +vector<Ability> abilities
+  +bool move(PieceId, Direction)
+  +bool useAbility(int, Target)
+  +void handleCommand(Command)
+  +void download(PieceId, int recipient)
+  +void reveal(PieceId, int viewer)
+  +void checkWin()
+}
+class Player {
+  +int id
+  +int downloadedData
+  +int downloadedViruses
+}
+class Board {
+  +Square[8][8] squares
+  +Square& at(Position)
+  +Position findPiece(PieceId)
+}
+class Piece {
+  +PieceId id
+  +int owner
+  +PieceType type
+  +int strength
+  +set<Move> moveset
+  +map<int, bool> visibility
+  +bool isVisibleTo(int player)
+  +void revealTo(int player)
+}
+class Move {
+  +int dx
+  +int dy
+}
+enum PieceType {
+  Data
+  Virus
+}
+class Square {
+  +int occupantId
+  +RenderSquareType Type
+  +vector<SquareEffect> effects
+  +bool triggerEnter(Game&, Piece&)
+}
+enum RenderSquareType {
+  Server
+  Regular
+  Firewall
+  Blockade
+}
+abstract class SquareEffect {
+  +bool effect(Game&, Piece&)
+}
+class Firewall {
+  +int owner
+  +bool effect(Game&, Piece&)
+}
+class Server {
+  +int owner
+  +bool effect(Game&, Piece&)
+}
+
+abstract class Subject {
+  -vector<Observer*> observers
+  +void attach(Observer*)
+  +void detach(Observer*)
+  +void notifyObservers()
+}
+abstract class Observer {
+  +void notify()
+}
+abstract class View {
+  #Game& game
+  #int viewpoint
+  +void notify()
+  +void render()
+}
+class GraphicsDisplay {
+  +void render()
+}
+class TextDisplay {
+  +void render()
+}
+class CommandInterpreter {
+  +void run()
+  +Command parse(string)
+}
+class Command {
+  +CommandType type
+  +PieceId piece
+  +Direction direction
+  +int abilityId
+  +Target target
+}
+enum CommandType {
+  Move
+  Ability
+  Board
+  Abilities
+  Sequence
+  Quit
+}
+enum Direction {
+  Up
+  Down
+  Left
+  Right
+}
+
+SwapAbility --|> Ability
+LinkBoost --|> Ability
+DownloadAbility --|> Ability
+PolarizeAbility --|> Ability
+ScanAbility --|> Ability
+BlockadeAbility --|> Ability
+DiagonalAbility --|> Ability
+FirewallAbility -up-|> Ability
+Ability ..> Target : uses
+Ability ..> Board : modifies
+Ability ..> Player : uses
+Target .up.> PieceId
+Target .up.> Position
+
+Game "1" *-- "2" Player
+Game "1" *-- "1" Board
+Game "1" *-- "16" Piece
+Player "1" *-up- "5" Ability
+Board "1" *-- "64" Square
+Piece "1" *-- "0..*" Move
+Piece --> PieceType
+Square -left-> RenderSquareType
+Square "1" *-- "0..*" SquareEffect
+Firewall -up-|> SquareEffect
+Server -up-|> SquareEffect
+FirewallAbility ..> Firewall : creates
+
+Game --|> Subject
+Subject o-- "0..*" Observer
+View --|> Observer
+GraphicsDisplay --|> View
+TextDisplay --|> View
+View --> Game : reads state
+CommandInterpreter --> Game
+CommandInterpreter ..> Command
+Command --> CommandType
+Command --> Direction
+@enduml
