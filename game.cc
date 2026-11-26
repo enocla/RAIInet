@@ -39,6 +39,8 @@ public:
   // should be called after every ability and move
   void checkWin();
 
+  void win(Player);
+
 private:
   bool handleBattle(Piece &opponent, Piece &challenger);
   void enter(Piece &piece, Position next);

@@ -4,7 +4,6 @@ module game;
 Player &Game::player(PlayerId id) { return players.at(id.value - 1); }
 
 bool Game::handleBattle(Piece &opponent, Piece &challenger) {
-
   opponent.revealTo(challenger.owner);
   challenger.revealTo(opponent.owner);
 
@@ -90,4 +89,24 @@ void Game::endTurn() {
   currentPlayer = currentPlayer == PlayerId{1} ? PlayerId{2} : PlayerId{1};
   abilityUsedThisTurn = false;
   notifyObservers();
+}
+
+void Game::checkWin() {
+  for (auto player : players) {
+    if (player.downloadedData == 4) {
+      win(player);
+    }
+    if (player.downloadedData == 4) {
+      player.defeated = true;
+    }
+  }
+  auto pred = [](const Player &p) { return !p.defeated; };
+
+  auto it = std::ranges::find_if(players, pred);
+
+  if (it != players.end() && std::ranges::find_if(std::next(it), players.end(),
+                                                  pred) == players.end()) {
+    auto &player = *it;
+    win(player);
+  }
 }
