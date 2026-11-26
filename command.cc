@@ -12,8 +12,6 @@ export enum class CommandType {
   Quit
 };
 
-export enum class Direction { Up, Down, Left, Right };
-
 export class Command {
 public:
   CommandType type;

@@ -8,8 +8,10 @@ void Board::addServers() {
   at(Position{0, 4}).effect = std::make_unique<ServerPort>(PlayerId{1});
 
   // bottom two server ports
-  at(Position{height - 1, 3}).effect = std::make_unique<ServerPort>(PlayerId{2});
-  at(Position{height - 1, 4}).effect = std::make_unique<ServerPort>(PlayerId{2});
+  at(Position{height - 1, 3}).effect =
+      std::make_unique<ServerPort>(PlayerId{2});
+  at(Position{height - 1, 4}).effect =
+      std::make_unique<ServerPort>(PlayerId{2});
 }
 
 Board::Board(std::vector<Piece> link1, std::vector<Piece> link2) {
@@ -35,6 +37,10 @@ Board::Board(std::vector<Piece> link1, std::vector<Piece> link2) {
     at(Position{starting_heights_p2[i], i}).occupant = link2.at(i).id;
     pieces.push_back(std::move(link2.at(i)));
   }
+}
+
+bool Board::inBoundsLeftRight(Position &position) const {
+  return position.col >= 0 && width > position.col;
 }
 
 Square &Board::at(Position position) {
@@ -78,4 +84,13 @@ void Board::download(PieceId pieceId, Player &recipient) {
   } else {
     throw "Invalid piece to download";
   }
+}
+
+void Board::relocate(PieceId pieceId, Position to) {
+  auto from = findPiece(pieceId);
+  if (!from.has_value() || at(to).occupant.has_value()) {
+    throw "Invalid relocation";
+  }
+  at(from.value()).occupant.reset();
+  at(to).occupant = pieceId;
 }

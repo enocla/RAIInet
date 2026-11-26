@@ -28,7 +28,7 @@ public:
   //  - if the link isn't the current player's
   //  - is already downloaded
   //  - would leave the map, etc
-  bool move(PieceId, Direction);
+  bool move(PieceId pieceId, Direction dir);
 
   // The int is the card's slot number in abilities
   // returns true if the card was played (was valid)
@@ -38,4 +38,9 @@ public:
 
   // should be called after every ability and move
   void checkWin();
+
+private:
+  bool handleBattle(Piece &opponent, Piece &challenger);
+  void enter(Piece &piece, Position next);
+  void endTurn();
 };
