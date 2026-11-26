@@ -19,6 +19,9 @@ bool Game::handleBattle(Piece &opponent, Piece &challenger) {
 }
 
 bool Game::move(PieceId pieceId, Direction dir) {
+  if (isOver())
+    return false;
+
   auto optionalpos = board.findPiece(pieceId);
 
   if (!optionalpos.has_value())
@@ -92,12 +95,13 @@ void Game::endTurn() {
 }
 
 void Game::checkWin() {
-  for (auto player : players) {
-    if (player.downloadedData == 4) {
-      win(player);
+  for (auto &p : players) {
+    if (p.downloadedData >= 4) {
+      winner = p.id;
+      return;
     }
-    if (player.downloadedData == 4) {
-      player.defeated = true;
+    if (p.downloadedViruses >= 4) {
+      p.defeated = true;
     }
   }
   auto pred = [](const Player &p) { return !p.defeated; };
@@ -106,7 +110,8 @@ void Game::checkWin() {
 
   if (it != players.end() && std::ranges::find_if(std::next(it), players.end(),
                                                   pred) == players.end()) {
-    auto &player = *it;
-    win(player);
+    winner = it->id;
   }
 }
+
+bool Game::isOver() const { return winner.has_value(); }

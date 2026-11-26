@@ -2,6 +2,7 @@ export module game;
 
 import <vector>;
 import <memory>;
+import <optional>;
 import observer;
 import player;
 import piece;
@@ -15,6 +16,7 @@ public:
   Board board;
   PlayerId currentPlayer;
   bool abilityUsedThisTurn;
+  std::optional<PlayerId> winner;
   std::vector<std::unique_ptr<Ability>> abilities;
 
   Player &player(PlayerId); // look up an existing player by id, ids start at 1
@@ -39,7 +41,7 @@ public:
   // should be called after every ability and move
   void checkWin();
 
-  void win(Player);
+  bool isOver() const;
 
 private:
   bool handleBattle(Piece &opponent, Piece &challenger);
