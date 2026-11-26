@@ -17,7 +17,7 @@ public:
   bool abilityUsedThisTurn;
   std::vector<std::unique_ptr<Ability>> abilities;
 
-  Player &player(PlayerId); // look up an existing player by id
+  Player &player(PlayerId); // look up an existing player by id, ids start at 1
 
   // 1. check that it can move there (off the edge, if so, download for mover)
   // 2. check that it can move there with blocking()

@@ -1,5 +1,7 @@
 module serverport;
 
+ServerPort::ServerPort(PlayerId owner) : owner{owner} {}
+
 bool ServerPort::blocking(const Piece &entering) const {
   if (entering.owner == owner) {
     return true;

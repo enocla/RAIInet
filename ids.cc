@@ -10,6 +10,6 @@ public:
 
 export class PlayerId {
 public:
-  int value;
+  int value; // 1-indexed, player 1 is PlayerId{1}
   auto operator<=>(const PlayerId &) const = default;
 };

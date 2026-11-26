@@ -1,6 +1,7 @@
 export module board;
 
 import <vector>;
+import <optional>;
 import piece;
 import player;
 import square;
@@ -11,8 +12,9 @@ export class Board {
   static const int height = 8;
 
   // TODO: make this more elegant
-  const int starting_heights_p1[width] = {1, 1, 1, 2, 2, 1, 1, 1};
-  const int starting_heights_p2[width] = {8, 8, 8, 7, 7, 8, 8, 8};
+  // rows are 0-indexed, p1 starts at the top
+  const int starting_heights_p1[width] = {0, 0, 0, 1, 1, 0, 0, 0};
+  const int starting_heights_p2[width] = {7, 7, 7, 6, 6, 7, 7, 7};
 
   void addServers();
 

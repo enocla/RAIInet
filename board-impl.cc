@@ -3,13 +3,13 @@ import <memory>;
 import serverport;
 
 void Board::addServers() {
-  // top two
-  at(Position{1, 4}).effect = std::make_unique<ServerPort>(PlayerId{1});
-  at(Position{1, 5}).effect = std::make_unique<ServerPort>(PlayerId{1});
+  // top two, middle columns are 3 and 4 since 0-indexed
+  at(Position{0, 3}).effect = std::make_unique<ServerPort>(PlayerId{1});
+  at(Position{0, 4}).effect = std::make_unique<ServerPort>(PlayerId{1});
 
   // bottom two server ports
-  at(Position{height, 4}).effect = std::make_unique<ServerPort>(PlayerId{2});
-  at(Position{height, 5}).effect = std::make_unique<ServerPort>(PlayerId{2});
+  at(Position{height - 1, 3}).effect = std::make_unique<ServerPort>(PlayerId{2});
+  at(Position{height - 1, 4}).effect = std::make_unique<ServerPort>(PlayerId{2});
 }
 
 Board::Board(std::vector<Piece> link1, std::vector<Piece> link2) {
@@ -33,7 +33,7 @@ Board::Board(std::vector<Piece> link1, std::vector<Piece> link2) {
 
   for (int i = 0; i < link2.size(); i++) {
     at(Position{starting_heights_p2[i], i}).occupant = link2.at(i).id;
-    pieces.push_back(std::move(link1.at(i)));
+    pieces.push_back(std::move(link2.at(i)));
   }
 }
 
@@ -65,7 +65,7 @@ Piece &Board::getPiece(PieceId pieceId) {
 void Board::download(PieceId pieceId, Player &recipient) {
   auto pos = findPiece(pieceId);
   if (pos.has_value()) {
-    auto piece = getPiece(pieceId);
+    auto &piece = getPiece(pieceId);
 
     at(pos.value()).occupant.reset();
     piece.revealTo(recipient.id);
