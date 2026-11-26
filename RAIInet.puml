@@ -9,6 +9,9 @@ hide empty members
 class PieceId {
   +int value
 }
+class PlayerId {
+  +int value
+}
 class Position {
   +int row
   +int col
@@ -17,7 +20,7 @@ class Target {
   +variant<PieceId, Position> value
 }
 abstract class Ability {
-  +int Owner
+  +PlayerId owner
   +bool use(Board&, Player& user, const Target&)
 }
 class SwapAbility
@@ -34,16 +37,17 @@ class FirewallAbility {
 class Game {
   +vector<Player> players
   +Board board
-  +int currentPlayer
+  +PlayerId currentPlayer
   +bool abilityUsedThisTurn
   +vector<unique_ptr<Ability>> abilities
+  +Player& player(PlayerId)
   +bool move(PieceId, Direction)
   +bool useAbility(int, Target)
   +void handleCommand(Command)
   +void checkWin()
 }
 class Player {
-  +int id
+  +PlayerId id
   +int downloadedData
   +int downloadedViruses
 }
@@ -54,17 +58,16 @@ class Board {
   +Position findPiece(PieceId) const
   +Piece& getPiece(PieceId)
   +void download(PieceId, Player& recipient)
-  +EntryResult enterTerrain(Position destination, PieceId mover, vector<Player>& players)
 }
 class Piece {
   +PieceId id
-  +int owner
+  +PlayerId owner
   +PieceType type
   +int strength
   +set<Move> moveset
-  +map<int, bool> visibility
-  +bool isVisibleTo(int player)
-  +void revealTo(int player)
+  +map<PlayerId, bool> visibility
+  +bool isVisibleTo(PlayerId player)
+  +void revealTo(PlayerId player)
 }
 class Move {
   +int dx
@@ -76,27 +79,38 @@ enum PieceType {
 }
 class Square {
   +optional<PieceId> occupant
-  +Terrain terrain = Regular
-  +optional<int> owner
   +unique_ptr<SquareEffect> effect
 }
-enum Terrain {
-  Regular
-  Server
-  Blockade
-}
 abstract class SquareEffect {
-  +{abstract} optional<int> onEnter(Piece& entering)
+  +bool blocking(const Piece& entering) const
+  +{abstract} optional<PlayerId> onEnter(Piece& entering)
+  +{abstract} DisplayEffectInfo getDisplayInfo() const
 }
 class Firewall {
-  +Firewall(int owner)
-  +int owner
-  +optional<int> onEnter(Piece& entering)
+  +Firewall(PlayerId owner)
+  +PlayerId owner
+  +optional<PlayerId> onEnter(Piece& entering)
+  +DisplayEffectInfo getDisplayInfo() const
 }
-enum EntryResult {
-  Blocked
-  Continue
-  Downloaded
+class ServerPort {
+  +PlayerId owner
+  +bool blocking(const Piece& entering) const
+  +optional<PlayerId> onEnter(Piece& entering)
+  +DisplayEffectInfo getDisplayInfo() const
+}
+class Blockade {
+  +bool blocking(const Piece& entering) const
+  +optional<PlayerId> onEnter(Piece& entering)
+  +DisplayEffectInfo getDisplayInfo() const
+}
+enum DisplayEffectKind {
+  ServerPort
+  Firewall
+  Blockade
+}
+class DisplayEffectInfo {
+  +DisplayEffectKind kind
+  +optional<PlayerId> owner
 }
 
 abstract class Subject {
@@ -110,7 +124,7 @@ abstract class Observer {
 }
 abstract class View {
   #Game& game
-  #int viewpoint
+  #PlayerId viewpoint
   +void notify()
   +void render()
 }
@@ -158,6 +172,8 @@ Ability ..> Target : uses
 Ability ..> Board : modifies
 Ability ..> Player : uses
 Target .up.> PieceId
+Piece --> PlayerId : owner
+Player --> PlayerId : id
 Target .up.> Position
 
 Game "1" *-- "2" Player
@@ -167,13 +183,17 @@ Game "1" *-up- "0..*" Ability
 Board "1" *-- "64" Square
 Piece "1" *-right- "0..*" Move
 Piece -right-> PieceType
-Square -left-> Terrain
 Square ..> PieceId
 Square "1" *-- "0..1" SquareEffect
 Firewall --|> SquareEffect
+ServerPort --|> SquareEffect
+Blockade --|> SquareEffect
 FirewallAbility ..> Firewall : places
+BlockadeAbility ..> Blockade : places
 SquareEffect ..> Piece
-Board ..> EntryResult
+SquareEffect ..> DisplayEffectInfo
+DisplayEffectInfo --> DisplayEffectKind
+View ..> DisplayEffectInfo : draws
 Board ..> Player
 
 Game --|> Subject

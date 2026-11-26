@@ -6,7 +6,7 @@ import target;
 
 export class Ability {
 public:
-  int Owner;
+  PlayerId owner;
   virtual ~Ability() = default;
   virtual bool use(Board &, Player &user, const Target &) = 0;
 };

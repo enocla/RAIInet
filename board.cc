@@ -6,16 +6,19 @@ import player;
 import square;
 export import target;
 
-export enum class EntryResult { Blocked, Continue, Downloaded };
-
 export class Board {
+  int width = 8;
+  int height = 8;
 public:
-  Square squares[8][8];
-  std::vector<Piece> pieces;
-  Square &at(Position);
-  Position findPiece(PieceId) const;
-  Piece &getPiece(PieceId);
-  void download(PieceId, Player &recipient);
+  // Square squares[height][width];
 
-  EntryResult enterTerrain(Position destination, PieceId mover, std::vector<Player> &players);
+  std::vector<std::vector<Square>> squares;
+
+  std::vector<Piece> pieces;
+  Square &at(Position position);
+  Position findPiece(PieceId pieceId) const;
+  Piece &getPiece(PieceId pieceId);
+
+  // only way to download a link
+  void download(PieceId pieceId, Player &recipient);
 };

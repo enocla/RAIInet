@@ -1,29 +1,27 @@
 export module piece;
 
+import <compare>;
 import <set>;
 import <map>;
+export import ids;
 
 export enum class PieceType { Data, Virus };
-
-export class PieceId {
-public:
-  int value;
-};
 
 export class Move {
 public:
   int dx;
   int dy;
+  auto operator<=>(const Move &) const = default; 
 };
 
 export class Piece {
 public:
   PieceId id;
-  int owner;
+  PlayerId owner;
   PieceType type;
   int strength;
   std::set<Move> moveset;
-  std::map<int, bool> visibility;
-  bool isVisibleTo(int player);
-  void revealTo(int player);
+  std::map<PlayerId, bool> visibility;
+  bool isVisibleTo(PlayerId player);
+  void revealTo(PlayerId player);
 };
