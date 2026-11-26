@@ -15,6 +15,7 @@ public:
 };
 
 export class Piece {
+  
 public:
   PieceId id;
   PlayerId owner;

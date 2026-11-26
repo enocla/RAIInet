@@ -2,27 +2,38 @@ module board;
 import <memory>;
 import serverport;
 
-void addServers(Board &board) {
+void Board::addServers() {
   // top two
-  board.at(Position{1, 4}).effect = std::make_unique<ServerPort>(PlayerId{1});
-  board.at(Position{1, 5}).effect = std::make_unique<ServerPort>(PlayerId{1});
+  at(Position{1, 4}).effect = std::make_unique<ServerPort>(PlayerId{1});
+  at(Position{1, 5}).effect = std::make_unique<ServerPort>(PlayerId{1});
 
   // bottom two server ports
-  board.at(Position{board.height, 4}).effect =
-      std::make_unique<ServerPort>(PlayerId{2});
-  board.at(Position{board.height, 5}).effect =
-      std::make_unique<ServerPort>(PlayerId{2});
+  at(Position{height, 4}).effect = std::make_unique<ServerPort>(PlayerId{2});
+  at(Position{height, 5}).effect = std::make_unique<ServerPort>(PlayerId{2});
 }
 
-Board::Board() {
-  std::vector<std::vector<Square>> rows;
-  rows.reserve(height);
-  for (int i = 0; i < height; i++) {
-    std::vector<Square> row;
+Board::Board(std::vector<Piece> link1, std::vector<Piece> link2) {
+  squares.reserve(height);
+  for (int i = 0; i < height; ++i) {
+    auto &row = squares.emplace_back();
     row.reserve(width);
-    for (int j = 0; j < width; j++) {
+    for (int j = 0; j < width; ++j) {
       row.emplace_back();
     }
+  }
+
+  pieces.reserve(width * 2);
+
+  addServers();
+
+  for (int i = 0; i < link1.size(); i++) {
+    at(Position{starting_heights_p1[i], i}).occupant = link1.at(i).id;
+    pieces.push_back(std::move(link1.at(i)));
+  }
+
+  for (int i = 0; i < link2.size(); i++) {
+    at(Position{starting_heights_p2[i], i}).occupant = link2.at(i).id;
+    pieces.push_back(std::move(link1.at(i)));
   }
 }
 
