@@ -7,16 +7,18 @@ import square;
 export import target;
 
 export class Board {
-  int width = 8;
-  int height = 8;
 public:
-  // Square squares[height][width];
+  const int width = 8;
+  const int height = 8;
+  Board();
 
+  // GO TO ROW AND THEN COLUMN
+  // i.e. vertical and then horizontal
   std::vector<std::vector<Square>> squares;
-
   std::vector<Piece> pieces;
+
   Square &at(Position position);
-  Position findPiece(PieceId pieceId) const;
+  std::optional<Position> findPiece(PieceId pieceId) const;
   Piece &getPiece(PieceId pieceId);
 
   // only way to download a link
