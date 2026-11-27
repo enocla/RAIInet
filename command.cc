@@ -1,5 +1,6 @@
 export module command;
 
+import <string>;
 import piece;
 export import target;
 
@@ -19,4 +20,5 @@ public:
   Direction direction;
   int abilityId;
   Target target;
+  std::string filename;
 };

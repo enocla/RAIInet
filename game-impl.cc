@@ -1,5 +1,14 @@
 module game;
 
+Game::Game(GameSetup setup)
+    : players{Player{PlayerId{1}}, Player{PlayerId{2}}},
+      board{std::move(setup.links1), std::move(setup.links2)} {
+  for (auto &a : setup.abilities1)
+    abilities.push_back(std::move(a));
+  for (auto &a : setup.abilities2)
+    abilities.push_back(std::move(a));
+}
+
 // player ids are 1-indexed
 Player &Game::player(PlayerId id) { return players.at(id.value - 1); }
 

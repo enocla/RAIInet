@@ -1,5 +1,6 @@
 module board;
 import <memory>;
+import <stdexcept>;
 import serverport;
 
 void Board::addServers() {
@@ -65,7 +66,7 @@ Piece &Board::getPiece(PieceId pieceId) {
       return piece;
     }
   }
-  throw "Invalid piece id";
+  throw std::out_of_range{"invalid piece id"};
 }
 
 void Board::download(PieceId pieceId, Player &recipient) {
@@ -82,14 +83,14 @@ void Board::download(PieceId pieceId, Player &recipient) {
       recipient.downloadedViruses++;
     }
   } else {
-    throw "Invalid piece to download";
+    throw std::logic_error{"downloading a link that isn't on the board"};
   }
 }
 
 void Board::relocate(PieceId pieceId, Position to) {
   auto from = findPiece(pieceId);
   if (!from.has_value() || at(to).occupant.has_value()) {
-    throw "Invalid relocation";
+    throw std::logic_error{"relocating to an occupied square or from off the board"};
   }
   at(from.value()).occupant.reset();
   at(to).occupant = pieceId;

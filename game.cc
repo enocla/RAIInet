@@ -10,12 +10,19 @@ import board;
 import ability;
 import command;
 
+export struct GameSetup {
+  std::vector<Piece> links1, links2;
+  std::vector<std::unique_ptr<Ability>> abilities1, abilities2;
+};
+
 export class Game : public Subject {
 public:
+  Game(GameSetup setup);
+
   std::vector<Player> players;
   Board board;
-  PlayerId currentPlayer;
-  bool abilityUsedThisTurn;
+  PlayerId currentPlayer{1};
+  bool abilityUsedThisTurn = false;
   std::optional<PlayerId> winner;
   std::vector<std::unique_ptr<Ability>> abilities;
 

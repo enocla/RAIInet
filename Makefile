@@ -8,10 +8,10 @@
 TARGET = raiinet
 
 # Source files
-SRC = observer.cc observer-impl.cc ids.cc piece.cc piece-impl.cc player.cc player-impl.cc target.cc squareeffect.cc firewall.cc serverport.cc serverport-impl.cc blockade.cc square.cc square-impl.cc board.cc board-impl.cc command.cc ability.cc ability-impl.cc game.cc game-impl.cc commandinterpreter.cc commandinterpreter-impl.cc view.cc view-impl.cc textdisplay.cc textdisplay-impl.cc graphics.cc graphics-impl.cc main.cc
+SRC = observer.cc observer-impl.cc ids.cc piece.cc piece-impl.cc player.cc player-impl.cc target.cc squareeffect.cc firewall.cc serverport.cc serverport-impl.cc blockade.cc square.cc square-impl.cc board.cc board-impl.cc command.cc ability.cc ability-impl.cc game.cc game-impl.cc gamestarter.cc gamestarter-impl.cc commandinterpreter.cc commandinterpreter-impl.cc view.cc view-impl.cc textdisplay.cc textdisplay-impl.cc graphics.cc graphics-impl.cc main.cc
 
 # Dependencies / Modules
-MODULES = compare iostream vector algorithm sstream string variant random chrono stdexcept set map memory optional
+MODULES = compare iostream vector algorithm sstream string variant random chrono stdexcept set map memory optional fstream utility
 
 ARGS =
 
