@@ -21,6 +21,12 @@ Piece::Piece(PieceId id, PlayerId owner, PieceType type, int strength) : id{id},
   moveset.insert(Move{Direction::Right});
 }
 
+char Piece::symbol() const {
+  int idx = id.value % LINKS_PER_PLAYER;  // 0 to 7
+  char first = (owner.value == 1) ? 'a' : 'A';
+  return first + idx;
+}
+
 bool Piece::isVisibleTo(PlayerId player) const {
   // return true if player is owner or has entry in map and false otherwise
   if (player == owner) return true;

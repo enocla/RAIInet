@@ -28,6 +28,7 @@ public:
   int strength;
   std::set<Move> moveset;
   std::map<PlayerId, bool> visibility;
+  char symbol() const;  // piece letter: a-h for player 1 and A-H for player 2
   bool isVisibleTo(PlayerId player) const;
   void revealTo(PlayerId player);
 };
